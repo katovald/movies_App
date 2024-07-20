@@ -1,2 +1,3 @@
-# movies_App
-Some flutter test
+# movie_app
+
+A small flutter project just to test services.
