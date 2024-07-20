@@ -12,6 +12,19 @@ class MoviesPage extends StatefulWidget {
 
 class _MoviesPageState extends State<MoviesPage> {
 
+  late Future<void> _fetchDataFuture;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _fetchDataFuture = _fetchMovies();
+  }
+
+  Future<void> _fetchMovies() async {
+    final moviesProvider = Provider.of<MoviesProvider>(context, listen: false);
+    await moviesProvider.fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +40,17 @@ class _MoviesPageState extends State<MoviesPage> {
             onPressed: () {
               moviesProvider.changeView();
             },
-          )
+          ),
+          IconButton(
+            icon: Icon(moviesProvider.isPopular ? Icons.star : Icons.play_arrow),
+            onPressed: () {
+              moviesProvider.changeData();
+            },
+          ),
         ],
       ),
       body: FutureBuilder(
-        future: moviesProvider.fetchPopular(),
+        future: _fetchDataFuture,
         builder: (context, snapshot) {
           if (moviesProvider.loading) {
             return const Center(
@@ -42,14 +61,23 @@ class _MoviesPageState extends State<MoviesPage> {
               child: Text(moviesProvider.errorMessage),
             );
           } else {
-            return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: moviesProvider.gridview ? 1 : 2,
+            return moviesProvider.gridview ? GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
                 childAspectRatio: 2 / 3,
               ),
               itemCount: moviesProvider.popular.length,
               itemBuilder: (context, index) {
                 return MovieCard(movie: moviesProvider.popular[index]);
+              },
+            )
+            : ListView.builder(
+              itemCount: moviesProvider.popular.length,
+              itemBuilder: (context, index) {
+                return SizedBox(
+                  height: 400,
+                    child: MovieCard(movie: moviesProvider.popular[index]),
+                );
               },
             );
           }

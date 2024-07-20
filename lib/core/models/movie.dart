@@ -23,7 +23,7 @@ class Movie {
   final double popularity;
 
   @JsonKey(name: 'original_language')
-  final List<Language> languages;
+  final String languages;
 
   @JsonKey(name: 'vote_average')
   final int voteAvg;
