@@ -12,7 +12,6 @@ class MovieCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final moviesProvider = Provider.of<MoviesProvider>(context);
-    final isFavorite = moviesProvider.isFavorite(movie);
 
     return Card(
       child: Column(
@@ -34,13 +33,9 @@ class MovieCard extends StatelessWidget {
                 top: 8,
                 right: 8,
                 child: IconButton(
-                  icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+                  icon: Icon(Icons.favorite_border),
                   onPressed: () {
-                    if (isFavorite) {
-                      moviesProvider.addRemoveFav(movie);
-                    } else {
-                      moviesProvider.addRemoveFav(movie);
-                    }
+
                   },
                 ),
               ),],
