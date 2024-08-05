@@ -1,12 +1,12 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:movie_app/core/domain/repositories/movie_repo.dart';
 import 'package:movie_app/core/models/api_response.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/movie.dart';
 import '../../services/api_service.dart';
 import '../../services/storage_service.dart';
 
-class MovieRepoCalls {
+class MovieRepoCalls implements MovieRepo {
   final ApiService api;
   final StorageService storageService;
 

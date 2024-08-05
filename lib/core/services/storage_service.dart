@@ -23,5 +23,4 @@ class StorageService {
     await sharedPreferences.clear();
   }
 
-
 }
