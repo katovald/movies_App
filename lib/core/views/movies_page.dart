@@ -12,77 +12,54 @@ class MoviesPage extends StatefulWidget {
 
 class _MoviesPageState extends State<MoviesPage> {
 
-  late Future<void> _fetchDataFuture;
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _fetchDataFuture = _fetchMovies();
-  }
-
-  Future<void> _fetchMovies() async {
-    final moviesProvider = Provider.of<MoviesProvider>(context, listen: false);
-    await moviesProvider.fetchData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<MoviesProvider>(context, listen: false).fetchPopularMovies();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-
-    final moviesProvider = Provider.of<MoviesProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Movies'),
         actions: [
           IconButton(
-            icon: Icon(moviesProvider.gridview ? Icons.list : Icons.grid_view),
+            icon: const Icon(Icons.grid_on),
             onPressed: () {
-              moviesProvider.changeView();
-            },
-          ),
-          IconButton(
-            icon: Icon(moviesProvider.isPopular ? Icons.star : Icons.play_arrow),
-            onPressed: () {
-              moviesProvider.changeData();
+              Provider.of<MoviesProvider>(context, listen: false).toggleView();
             },
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: _fetchDataFuture,
-        builder: (context, snapshot) {
-          if (moviesProvider.loading) {
+      body: Consumer<MoviesProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading) {
             return const Center(
               child: CircularProgressIndicator(),
             );
-          } else if (moviesProvider.errorMessage.isNotEmpty) {
-            return Center(
-              child: Text(moviesProvider.errorMessage),
-            );
-          } else {
-            return moviesProvider.gridview ? GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 2 / 3,
-              ),
-              itemCount: moviesProvider.popular.length,
-              itemBuilder: (context, index) {
-                return MovieCard(movie: moviesProvider.popular[index]);
-              },
-            )
-            : ListView.builder(
-              itemCount: moviesProvider.popular.length,
-              itemBuilder: (context, index) {
-                return SizedBox(
-                  height: 400,
-                    child: MovieCard(movie: moviesProvider.popular[index]),
-                );
-              },
-            );
           }
+          return provider.gridView ? GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.7,
+            ),
+            itemCount: provider.movies.length,
+            itemBuilder: (context, index) {
+              return MovieCard(movie: provider.movies[index]);
+            },
+          )
+          :
+          ListView.builder(
+            itemCount: provider.movies.length,
+            itemBuilder: (context, index) {
+              return MovieCard(movie: provider.movies[index]);
+            },
+          );
         },
-      )
+      ),
     );
   }
 }
